@@ -1,24 +1,55 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Rails開発環境で必要な初期設定がされたソース。  
 
-Things you may want to cover:
+## 構築手順
 
-* Ruby version
+1. Dockerfileを下記の通り修正する。
+```
+$ vi Dockerfile
 
-* System dependencies
+$ diff Dockerfile Dockerfile_old 
+23,26c23,26
+< #COPY . $APP_ROOT/
+< #
+< #EXPOSE 8888
+< #CMD ["rails", "server", "-b", "0.0.0.0", "-p", "8888"]
+---
+> COPY . $APP_ROOT/
+> 
+> EXPOSE 8888
+> CMD ["rails", "server", "-b", "0.0.0.0", "-p", "8888"]
+$ 
+```
 
-* Configuration
+2. Dockerイメージの作成とRailsソースの作成
+```
+$ docker build -t katsuya003/project .
 
-* Database creation
+$ docker run --rm -it -v "$PWD":/project katsuya003/project rails new . -BT -d mysql
+```
 
-* Database initialization
+3. Dockerfileを下記の通り修正する。
+```
+$ vi Dockerfile
 
-* How to run the test suite
+$ diff Dockerfile Dockerfile_old 
+23,26c23,26
+< COPY . $APP_ROOT/
+< 
+< EXPOSE 8888
+< CMD ["rails", "server", "-b", "0.0.0.0", "-p", "8888"]
+---
+> #COPY . $APP_ROOT/
+> 
+> #EXPOSE 8888
+> #CMD ["rails", "server", "-b", "0.0.0.0", "-p", "8888"]
+$ 
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+4. docker-composeでイメージを作成する。
+```
+$ docker-compose build
 
-* Deployment instructions
-
-* ...
+$ docker-compose up -d
+```
